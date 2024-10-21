@@ -1,9 +1,9 @@
 import random
+import time
 from quicksort_recursive import quicksort_recursive
 
 if __name__ == "__main__":
-    # Length of the array
-    arrayLength = 1000
+    arrayLength = 80000
     arrayHigherLimit = 1000
 
     # Generates a random array with the length above
@@ -14,12 +14,12 @@ if __name__ == "__main__":
     for number in numbersArray:
         auxiliaryNumbersArray.append(number)
 
+    # Starts the CPU time counting before the execution of the recursive Quicksort algorithm
+    startTime = time.process_time()
+
     quicksort_recursive(numbersArray, 0, len(numbersArray) - 1)
 
-    print("Original array")
-    for number in auxiliaryNumbersArray:
-        print(number, end=" ")
+    # Gets the full executing time to sort the array
+    sortingTime = time.process_time() - startTime
 
-    print("\nSorted array")
-    for number in numbersArray:
-        print(number, end=" ")
+    print("\nCPU execution time to sort the array:", sortingTime)
