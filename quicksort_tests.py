@@ -9,12 +9,11 @@ def generate_test_data(n, order="random"):
     if order == "random":
         return [random.randint(1, 1000) for _ in range(n)]
     elif order == "sorted":
-        return list(range(1, n+1))
+        return list(range(1, n, +1))
     elif order == "reverse":
         return list(range(n, 0, -1))
 
-def run_quicksort_tests():
-    array_length = 100000
+def run_quicksort_tests(array_length):
     array = generate_test_data(array_length, order="random")
 
     # Recursive quicksort
