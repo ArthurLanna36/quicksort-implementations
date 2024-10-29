@@ -13,27 +13,40 @@ def generate_test_data(n, order="random"):
     elif order == "reverse":
         return list(range(n, 0, -1))
 
+def time_standard_quicksort(array):
+    # Recursive quicksort
+    start_time = time.process_time()
+    operations = quicksort_recursive(array, 0, len(array) - 1)
+    cpu_time = time.process_time() - start_time
+    return (cpu_time, operations)
+
+def time_cutoff_quicksort(array, M):
+    start_time = time.process_time()
+    operations = quicksort_recursive_cutoff(array, 0, len(array) - 1, M)
+    cpu_time = time.process_time() - start_time
+    return (cpu_time, operations)
+
+def time_median_quicksort(array):
+    start_time = time.process_time()
+    operations = quicksort_median_of_three(array, 0, len(array) - 1)
+    cpu_time = time.process_time() - start_time
+    return (cpu_time, operations)
+
+#--------------------Test Routines--------------------
+
+# Test all
 def run_quicksort_tests(array_length):
     array = generate_test_data(array_length, order="random")
 
     # Recursive quicksort
-    numbers_array_copy = array.copy()
-    start_time = time.process_time()
-    standard_quicksort_operations = quicksort_recursive(numbers_array_copy, 0, len(numbers_array_copy) - 1)
-    standard_quicksort_cpu_time = time.process_time() - start_time
+    standard_quicksort_cpu_time, standard_quicksort_operations = time_standard_quicksort(array.copy())
 
     # Recursive quicksort dividing the array in smaller parts when M is small enough
     M = 10  # M value can be adjusted
-    numbers_array_copy = array.copy()
-    start_time = time.process_time()
-    cutoff_quicksort_operations = quicksort_recursive_cutoff(numbers_array_copy, 0, len(numbers_array_copy) - 1, M)
-    cutoff_quicksort_cpu_time = time.process_time() - start_time
+    cutoff_quicksort_cpu_time, cutoff_quicksort_operations = time_cutoff_quicksort(array.copy(), M)
 
     # Quicksort using median of three strategy
-    numbers_array_copy = array.copy()
-    start_time = time.process_time()
-    median_of_three_quicksort_operations = quicksort_median_of_three(numbers_array_copy, 0, len(numbers_array_copy) - 1)
-    median_cutoff_quicksort_cpu_time = time.process_time() - start_time
+    median_cutoff_quicksort_cpu_time, median_of_three_quicksort_operations = time_median_quicksort(array.copy())
 
     total_operations = {
         'comparisonsTotal': [
