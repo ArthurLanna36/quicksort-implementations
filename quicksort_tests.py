@@ -1,5 +1,8 @@
-import time
+import matplotlib.pyplot as plt
+import pandas as pd
 import random
+import math
+import time
 
 from quicksort_recursive import quicksort_recursive
 from quicksort_recursive_cutoff import quicksort_recursive_cutoff
@@ -68,3 +71,53 @@ def run_quicksort_tests(array_length):
     ]
 
     return total_operations, cpu_times
+
+# Find the best m
+# array_length -> Array Length
+def find_best_m(array_length, start_m, end_m, fit):
+    if start_m < 1:
+        start_m = 1
+    if end_m > array_length:
+        end_m = array_length
+    m = start_m
+
+    m_run_times = 10
+    best_cpu_time = math.inf
+    average_list = []
+    m_list = []
+
+    while m < end_m:
+        m_cpu_time = 0
+
+        for _ in range(m_run_times):
+            array = generate_test_data(array_length, order="random")
+            cpu_time, operations = time_cutoff_quicksort(array, m)
+            m_cpu_time = m_cpu_time + cpu_time
+
+        average_m_cpu_time = m_cpu_time / m_run_times
+
+        if average_m_cpu_time < best_cpu_time:
+            best_cpu_time = average_m_cpu_time
+
+        print("Best= ", best_cpu_time, ", Average= ", average_m_cpu_time, ", M= ", m)
+
+        average_list.append(average_m_cpu_time)
+        m_list.append(m)
+
+        m = m + fit
+
+    df = pd.DataFrame({
+        'M': m_list,
+        'Cpu_time': average_list
+    })
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(df['M'], df['Cpu_time'], marker='o')
+    plt.title('M vs Cpu_time')
+    plt.xlabel('M')
+    plt.ylabel('Cpu_time')
+    plt.grid(True)
+    plt.xticks(m_list, rotation=45)
+    plt.show()
+
+    return m
