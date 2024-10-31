@@ -1,6 +1,6 @@
 import customtkinter
 import threading
-
+import pandas as pd
 from create_bar_graph import create_bar_graph
 from quicksort_tests import run_quicksort_tests
 
@@ -56,6 +56,20 @@ def create_application():
 
         # Execute Quicksort tests with the specified vector size
         new_results = run_quicksort_tests(int(vector_size))
+
+        compSwap = pd.DataFrame({
+            'Comparacoes totais': new_results[0]['comparisonsTotal'],
+            'Trocas totais': new_results[0]['swapsTotal'],
+            'Algoritmos': ['Quicksort', 'Cutoff Quicksort', 'Median of Three Quicksort']
+        })
+
+        execTimes = pd.DataFrame({
+            'Tempos': new_results[1],
+            'Algoritmos': ['Quicksort', 'Cutoff Quicksort', 'Median of Three Quicksort']
+        })
+
+        compSwap.to_csv('Comparations_and_Swaps.csv', index=False)
+        execTimes.to_csv('Execution_Times.csv', index=False)
 
         # Remove loading label once tests complete
         loading_label.destroy()
