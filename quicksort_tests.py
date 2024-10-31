@@ -1,5 +1,8 @@
 import time
 import random
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 from quicksort_recursive import quicksort_recursive
 from quicksort_recursive_cutoff import quicksort_recursive_cutoff
@@ -68,3 +71,77 @@ def run_quicksort_tests(array_length):
     ]
 
     return total_operations, cpu_times
+
+def find_best_m(array_length):
+    try_size = 80
+    test_size = 3
+    count_test = 0
+    count_try = 0
+
+    m = 10
+    fit = 10
+
+    best_cpu_time = 99999999999999
+
+    average_list = []
+    m_list = []
+
+    for _ in range(try_size):
+        print("Fit = ", fit)
+
+        m = m + fit
+
+        if m > array_length:
+            break
+
+        print("new m = ", m)
+        m_cpu_time = 0
+
+        for _ in range(test_size):
+            array = generate_test_data(array_length, order="random")
+            cpu_time, operations = time_cutoff_quicksort(array, m)
+            m_cpu_time = m_cpu_time + cpu_time
+
+        average_m_cpu_time = m_cpu_time / test_size
+
+        if average_m_cpu_time < best_cpu_time:
+            best_cpu_time = average_m_cpu_time
+        print("Best= ", best_cpu_time, ", Average= ", average_m_cpu_time, ", M= ", m)
+
+        average_list.append(average_m_cpu_time)
+        m_list.append(m)
+
+    df = pd.DataFrame({
+        'M': m_list,
+        'Cpu_time': average_list
+    })
+
+    num_values = 35
+
+    if len(m_list) <= num_values:
+        selected_m = m_list
+    else:
+        selected_m = np.linspace(min(m_list), max(m_list), num_values)
+        selected_m = np.round(selected_m).astype(int)
+
+    selected_cpu_time = np.interp(selected_m, m_list, average_list)
+
+    dfFormated = pd.DataFrame({
+        'M': selected_m,
+        'CPU_time': selected_cpu_time
+    })
+
+
+    dfFormated.to_csv('M_vs_CPU_Time.csv', index=False)
+    print("Arquivo CSV gerado")
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(df['M'], df['Cpu_time'], marker='o')
+    plt.title('M vs Cpu_time')
+    plt.xlabel('M')
+    plt.ylabel('Cpu_time')
+    plt.grid(True)
+    plt.xticks(m_list)
+    plt.show()
+
+    return m

@@ -26,3 +26,6 @@ dist/
 # System files
 .DS_Store
 Thumbs.db
+
+# CSV Files
+*.csv
