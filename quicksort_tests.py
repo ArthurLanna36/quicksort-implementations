@@ -74,50 +74,59 @@ def run_quicksort_tests(array_length):
 
 # Find the best m
 # array_length -> Array Length
-def find_best_m(array_length, start_m, end_m, fit):
-    if start_m < 1:
-        start_m = 1
-    if end_m > array_length:
-        end_m = array_length
-    m = start_m
+def find_best_m(array):
+    array_length = len(array)
 
-    m_run_times = 10
+    fit = 10
+    m = 10
+    end_m = 100
+
+    best_m = m
+
     best_cpu_time = math.inf
     average_list = []
     m_list = []
 
     while m < end_m:
-        m_cpu_time = 0
 
-        for _ in range(m_run_times):
-            array = generate_test_data(array_length, order="random")
-            cpu_time, operations = time_cutoff_quicksort(array, m)
-            m_cpu_time = m_cpu_time + cpu_time
+        cpu_time, operations = time_cutoff_quicksort(array.copy(), m)
 
-        average_m_cpu_time = m_cpu_time / m_run_times
-
-        if average_m_cpu_time < best_cpu_time:
-            best_cpu_time = average_m_cpu_time
-
-        print("Best= ", best_cpu_time, ", Average= ", average_m_cpu_time, ", M= ", m)
-
-        average_list.append(average_m_cpu_time)
-        m_list.append(m)
-
+        if cpu_time < best_cpu_time:
+            best_cpu_time = cpu_time
+            best_m = m
+        print("Best= ", best_cpu_time, ", Cpu_time ", cpu_time, ", M= ", m)
         m = m + fit
 
+    return best_cpu_time
+
+def quick_sort():
+
+    array_length = 10
+
+    tempo = []
+    vetor = []
+
+    for _ in range(5):
+        array = generate_test_data(array_length, order="random")
+        print("--------------------")
+        print(array_length)
+        vetor.append(array_length)
+        tempo.append(find_best_m(array))
+        array_length = array_length * 10
+
     df = pd.DataFrame({
-        'M': m_list,
-        'Cpu_time': average_list
+        'Vetor': vetor,
+        'Tempo': tempo
     })
 
     plt.figure(figsize=(10, 6))
-    plt.plot(df['M'], df['Cpu_time'], marker='o')
-    plt.title('M vs Cpu_time')
-    plt.xlabel('M')
-    plt.ylabel('Cpu_time')
+    plt.plot(df['Vetor'], df['Tempo'] * 1000, marker='o')
+    plt.title('Vetor x Tempo')
+    plt.xlabel('Vetor')
+    plt.ylabel('Tempo')
+    plt.xscale('log')
     plt.grid(True)
-    plt.xticks(m_list, rotation=45)
-    plt.show()
+    for i in range(len(vetor)):
+        plt.text(vetor[i], tempo[i] + 0.1, f"{tempo[i]:.2f}", ha='center')
 
-    return m
+    plt.show()
